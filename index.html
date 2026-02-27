@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Heart Intelligence Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>🧠 AI Health</h2>
+
+    <label>Gender</label>
+    <select id="genderFilter">
+      <option value="All">All</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+
+    <label>Smoking</label>
+    <select id="smokingFilter">
+      <option value="All">All</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+
+    <button onclick="applyFilters()">Run Analysis</button>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <h1>Heart Disease AI Dashboard</h1>
+
+    <!-- KPIs -->
+    <div class="kpis">
+      <div class="kpi">
+        <h3>Total Patients</h3>
+        <p id="totalPatients">0</p>
+      </div>
+
+      <div class="kpi red">
+        <h3>Heart Risk Cases</h3>
+        <p id="riskCases">0</p>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts">
+      <div class="card">
+        <h3>Gender Distribution</h3>
+        <canvas id="genderChart"></canvas>
+      </div>
+
+      <div class="card">
+        <h3>Smoking Impact</h3>
+        <canvas id="smokingChart"></canvas>
+      </div>
+    </div>
+
+    <!-- AI Insight -->
+    <div class="ai-section">
+      <h3>🤖 AI Insight</h3>
+      <button onclick="generateAI()">Generate AI Insight</button>
+      <p id="aiText">Click button to generate AI analysis...</p>
+    </div>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
