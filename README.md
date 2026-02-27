@@ -55,16 +55,18 @@ heart-disease-dashboard/
 
 ---
 
+---
+
 ## 📸 Screenshots
 
-### 🏠 Dashboard
-![Dashboard](screenshots/dashboard.png)
+### 🏠 Dashboard Overview
+![Dashboard](screenshots/dashboard1.png)
 
-### 🧠 Risk Predictor
-![Risk Predictor](screenshots/risk_predictor.png)
+### 📊 Risk Predictor
+![Risk Predictor](screenshots/dashboard2.png)
 
-### 🤖 AI Report
-![AI Report](screenshots/ai_report.png)
+### 🤖 AI Generated Report
+![AI Report](screenshots/dashboard3.png)
 
 ---
 
