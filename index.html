@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Analysis Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <div class="header">
+            <h1>❤️ Heart Disease Analysis Dashboard</h1>
+            <p class="subtitle">Comprehensive Health Data Analytics & Prediction</p>
+        </div>
+
+        <!-- Filters Panel -->
+        <div class="filter-panel">
+            <div class="filter-header">
+                <h3>🔍 Filter Data</h3>
+                <button class="btn-reset" onclick="resetFilters()">Reset Filters</button>
+            </div>
+            
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>Age Category</label>
+                    <div class="checkbox-group" id="ageFilters"></div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Sex</label>
+                    <div class="checkbox-group" id="sexFilters"></div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Smoking Habits</label>
+                    <div class="checkbox-group" id="smokingFilters"></div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Physical Activity</label>
+                    <div class="checkbox-group" id="activityFilters"></div>
+                </div>
+
+                <div class="filter-group">
+                    <label>General Health</label>
+                    <div class="checkbox-group" id="healthFilters"></div>
+                </div>
+
+                <div class="filter-group">
+                    <label>BMI Range: <span id="bmiValue">0 - 0</span> kg/m²</label>
+                    <input type="range" id="bmiMin" min="10" max="60" step="0.1" value="10">
+                    <input type="range" id="bmiMax" min="10" max="60" step="0.1" value="60">
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn-apply" onclick="applyFilters()">📊 Apply Filters</button>
+                <button class="btn-report" onclick="generateReport()">📋 Generate AI Report</button>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('overview')">📊 Overview</button>
+            <button class="tab-btn" onclick="switchTab('analysis')">📈 Analysis</button>
+            <button class="tab-btn" onclick="switchTab('prediction')">🔮 Risk Predictor</button>
+            <button class="tab-btn" onclick="switchTab('report')">📋 AI Report</button>
+            <button class="tab-btn" onclick="switchTab('data')">📋 Data Summary</button>
+        </div>
+
+        <!-- TAB 1: OVERVIEW -->
+        <div id="overview" class="tab-content active">
+            <!-- KPI Cards -->
+            <div class="kpi-container">
+                <div class="kpi-card">
+                    <div class="kpi-icon">👥</div>
+                    <h3>Total Patients</h3>
+                    <p class="kpi-value" id="totalPatients">{{ stats.total }}</p>
+                </div>
+                <div class="kpi-card red">
+                    <div class="kpi-icon">⚠️</div>
+                    <h3>Heart Disease Cases</h3>
+                    <p class="kpi-value" id="diseaseCases">{{ stats.disease_count }}</p>
+                    <span class="kpi-percent">{{ stats.disease_pct }}%</span>
+                </div>
+                <div class="kpi-card green">
+                    <div class="kpi-icon">✅</div>
+                    <h3>Healthy Patients</h3>
+                    <p class="kpi-value" id="healthyCases">{{ stats.healthy_count }}</p>
+                </div>
+                <div class="kpi-card blue">
+                    <div class="kpi-icon">💨</div>
+                    <h3>Smokers</h3>
+                    <p class="kpi-value" id="smokingRate">{{ stats.smoking_pct }}%</p>
+                </div>
+            </div>
+
+            <!-- Quick Stats Row -->
+            <div class="stats-row">
+                <div class="stat-box">
+                    <h4>Avg BMI</h4>
+                    <p id="avgBMI">{{ stats.avg_bmi }}</p>
+                    <span>kg/m²</span>
+                </div>
+                <div class="stat-box">
+                    <h4>Physical Activity</h4>
+                    <p id="physicalActivity">{{ stats.physical_activity_pct }}%</p>
+                    <span>Participants</span>
+                </div>
+            </div>
+
+            <!-- Main Charts -->
+            <div class="charts-grid">
+                <div class="chart-box">
+                    <h3>📅 Age Category vs Heart Disease</h3>
+                    <canvas id="ageChart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>👫 Gender Distribution</h3>
+                    <canvas id="genderChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: ANALYSIS -->
+        <div id="analysis" class="tab-content">
+            <div class="charts-grid">
+                <div class="chart-box">
+                    <h3>🚭 Smoking Habits</h3>
+                    <canvas id="smokingChart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>🏃 Physical Activity</h3>
+                    <canvas id="activityChart"></canvas>
+                </div>
+            </div>
+
+            <div class="analysis-section">
+                <h3>📊 Key Insights</h3>
+                <div class="insights-grid">
+                    <div class="insight-card">
+                        <h4>Disease Distribution</h4>
+                        <p id="insight1">Loading...</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4>Smoking Impact</h4>
+                        <p id="insight2">Loading...</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4>Activity Factor</h4>
+                        <p id="insight3">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: PREDICTION -->
+        <div id="prediction" class="tab-content">
+            <div class="prediction-section">
+                <h2>🔮 Heart Disease Risk Predictor</h2>
+                <p class="section-desc">Enter patient information to predict heart disease risk</p>
+
+                <form id="predictionForm" class="prediction-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>BMI (kg/m²)</label>
+                            <input type="number" name="BMI" min="10" max="60" step="0.1" value="25" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Sex</label>
+                            <select name="Sex" required>
+                                <option value="0">Female</option>
+                                <option value="1">Male</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Smoking</label>
+                            <select name="Smoking" required>
+                                <option value="0">No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Physical Activity</label>
+                            <select name="PhysicalActivity" required>
+                                <option value="0">No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-predict">🔍 Predict Risk</button>
+                </form>
+
+                <div id="predictionResult" class="result-box hidden">
+                    <h3>Prediction Result</h3>
+                    <div class="result-content">
+                        <div class="result-status" id="resultStatus"></div>
+                        <div class="result-probability">
+                            <p>Risk Level: <span id="riskLevel">-</span></p>
+                            <p>Confidence: <span id="confidence">-</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: AI REPORT -->
+        <div id="report" class="tab-content">
+            <div class="report-section">
+                <h2>📋 AI-Powered Analysis Report</h2>
+                <p class="section-desc">AI-generated insights based on filtered or entire dataset</p>
+                
+                <div id="reportContent" class="report-content">
+                    <p style="text-align: center; color: #999;">Select "Generate AI Report" from the filters panel or click the button below</p>
+                    <button class="btn-report" onclick="generateReport()">📋 Generate AI Report</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: DATA SUMMARY -->
+        <div id="data" class="tab-content">
+            <div class="data-summary">
+                <h2>📋 Dataset Summary</h2>
+                
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <h4>Total Records</h4>
+                        <p id="summaryTotal">-</p>
+                    </div>
+                    <div class="summary-item">
+                        <h4>Disease Cases</h4>
+                        <p id="summaryDisease">-</p>
+                    </div>
+                    <div class="summary-item">
+                        <h4>Healthy Cases</h4>
+                        <p id="summaryHealthy">-</p>
+                    </div>
+                    <div class="summary-item">
+                        <h4>Avg BMI</h4>
+                        <p id="summaryBMI">-</p>
+                    </div>
+                </div>
+
+                <h3>Dataset Features</h3>
+                <div class="features-list" id="featuresList">
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>❤️ Heart Disease Analysis System | Data-Driven Healthcare Insights</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
